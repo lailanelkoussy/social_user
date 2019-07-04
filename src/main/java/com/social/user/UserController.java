@@ -11,7 +11,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping(value = "/users")
 public class UserController {
 
     @Autowired
@@ -23,19 +23,24 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @GetMapping(value = "/{username}")
-    public UserDTO getUser(@PathVariable String username) {
-        return userService.getUser(username);
+    @GetMapping(value = "/{id}")
+    public UserDTO getUser(@PathVariable int id) {
+        return userService.getUser(id);
     }
 
-    @GetMapping(value = "/{username}/groups")
-    public List<Group> getUserGroups(@PathVariable String username) {
-        return userService.getUsersGroup(username);
+    @GetMapping(value = "/{id}/groups")
+    public List<Group> getUserGroups(@PathVariable int id) {
+        return userService.getUsersGroup(id);
     }
 
     @GetMapping(value = "/search/{query}")
-    public List<User> searchForUser(@PathVariable String query){
+    public List<UserDTO> searchForUser(@PathVariable String query){
         return userService.searchForUser(query);
+    }
+
+    @GetMapping(value = "/{id}/following")
+    public List<UserDTO> getUserFollowing(@PathVariable int id){
+        return userService.getUserFollowing(id);
     }
 
     @PostMapping
@@ -48,17 +53,16 @@ public class UserController {
         return new ResponseEntity<>(userService.updateUser(userDTO) ? HttpStatus.OK : HttpStatus.NOT_ACCEPTABLE);
     }
 
-    @DeleteMapping(value = "/{username}")
-    public void deleteUser(@PathVariable String username) {
-        userService.deleteUser(username);
+    @DeleteMapping(value = "/{id}")
+    public void deleteUser(@PathVariable int id) {
+        userService.deleteUser(id);
     }
 
-    @PatchMapping(value = "/{username}")
-    public void ActivateOrDeactivateUser(@PathVariable String username, @RequestBody boolean activate) {
-        userService.ActivateOrDeactivateUser(username, activate);
+    @PatchMapping(value = "/{id}")
+    public void ActivateOrDeactivateUser(@PathVariable int id, @RequestBody boolean activate) {
+        userService.ActivateOrDeactivateUser(id, activate);
 
     }
-
     @PatchMapping(value = "/{id}/follow/{userToFollowId}/{follow}")
     public void followOrUnfollowUser(@PathVariable int id, @PathVariable int userToFollowId, @PathVariable boolean follow){
         userService.followOrUnfollowUser(id, userToFollowId, follow);

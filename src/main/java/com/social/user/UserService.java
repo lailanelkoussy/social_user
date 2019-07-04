@@ -35,17 +35,17 @@ public class UserService {
         return userDTOS;
     }
 
-    public UserDTO getUser(String username) {
-        Optional<User> userOptional = userRepository.findByUsername(username);
-        log.info("Retrieving user " + username + " from database");
+    public UserDTO getUser(int id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        log.info("Retrieving user id#" + id + " from database");
         if (userOptional.isPresent()) {
-            log.info("User " + username + "found in database");
+            log.info("User id#" + id + "found in database");
             ModelMapper modelMapper = new ModelMapper();
             UserDTO userDTO = new UserDTO();
             modelMapper.map(userOptional.get(), userDTO);
             return userDTO;
         } else {
-            log.error("User " + username + " not found in database");
+            log.error("User id#" + id + " not found in database");
             return null;
         }
     }
@@ -83,13 +83,13 @@ public class UserService {
         }
     }
 
-    public void deleteUser(String username) {
-        log.info("Deleting user " + username);
-        userRepository.deleteByUsername(username);
+    public void deleteUser(int id) {
+        log.info("Deleting user id#" + id);
+        userRepository.deleteById(id);
     }
 
-    public void ActivateOrDeactivateUser(String username, boolean activate) {
-        Optional<User> userOptional = userRepository.findByUsername(username);
+    public void ActivateOrDeactivateUser(int id, boolean activate) {
+        Optional<User> userOptional = userRepository.findById(id);
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -103,8 +103,8 @@ public class UserService {
 
     }
 
-    public List<Group> getUsersGroup(String username) {
-        Optional<User> userOptional = userRepository.findByUsername(username);
+    public List<Group> getUsersGroup(int id) {
+        Optional<User> userOptional = userRepository.findById(id);
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -131,7 +131,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public List<User> searchForUser(String query) {
+    public List<UserDTO> searchForUser(String query) {
         String[] keywords = query.split(" ");
 
         List<User> users = userRepository.findAllByFirstName(keywords[0]);
@@ -142,6 +142,31 @@ public class UserService {
             users.retainAll(userRepository.findAllByMiddleName(keywords[1]));
             users.retainAll(userRepository.findAllByLastName(keywords[2]));
         }
-        return users;
+
+        ModelMapper modelMapper = new ModelMapper();
+        List<UserDTO> userDTOS = new ArrayList<>();
+
+        for (User user : users) {
+            UserDTO userDTO = new UserDTO();
+            modelMapper.map(user, userDTO);
+            userDTOS.add(userDTO);
+        }
+        return userDTOS;
+    }
+
+    public List<UserDTO> getUserFollowing(int userId) {
+        User user = userRepository.getOne(userId);
+        List<User> following = user.getFollowing();
+        List<UserDTO> followingDTOs = new ArrayList<>();
+
+        ModelMapper modelMapper = new ModelMapper();
+
+        for (User userFollowing : following) {
+            UserDTO userDTO = new UserDTO();
+            modelMapper.map(userFollowing,userDTO);
+            followingDTOs.add(userDTO);
+        }
+
+        return followingDTOs;
     }
 }

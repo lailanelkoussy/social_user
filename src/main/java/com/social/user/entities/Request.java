@@ -1,5 +1,6 @@
 package com.social.user.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ public class Request {
 
     int userId;
 
+    @JsonIgnore
     Group group;
 }
 

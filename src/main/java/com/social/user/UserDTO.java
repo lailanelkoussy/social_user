@@ -2,10 +2,12 @@ package com.social.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.social.user.entities.User;
 import lombok.Data;
 
 import javax.validation.constraints.Pattern;
 import java.util.Calendar;
+import java.util.List;
 
 @Data
 public class UserDTO {
@@ -43,6 +45,9 @@ public class UserDTO {
     private String lastName;
 
     private Calendar birthday;
+
+    @JsonIgnore
+    private List<UserDTO> following;
 
     @JsonProperty
     public void setPassword(String password) {
