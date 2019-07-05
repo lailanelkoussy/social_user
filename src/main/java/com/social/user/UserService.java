@@ -121,14 +121,16 @@ public class UserService {
         User userToFollow = userRepository.getOne(userToFollowId);
 
         List<User> following = user.getFollowing();
-
-        if (follow) {
-            following.add(userToFollow);
-        } else {
-            following.remove(userToFollow);
+        if (user.getUserId() != userToFollowId) {
+            if (follow) {
+                following.add(userToFollow);
+            } else {
+                following.remove(userToFollow);
+            }
+            user.setFollowing(following);
+            userRepository.save(user);
         }
-        user.setFollowing(following);
-        userRepository.save(user);
+        log.warn("A user cannot follow themselves");
     }
 
     public List<UserDTO> searchForUser(String query) {
@@ -163,7 +165,7 @@ public class UserService {
 
         for (User userFollowing : following) {
             UserDTO userDTO = new UserDTO();
-            modelMapper.map(userFollowing,userDTO);
+            modelMapper.map(userFollowing, userDTO);
             followingDTOs.add(userDTO);
         }
 

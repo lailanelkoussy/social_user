@@ -58,8 +58,8 @@ public class UserController {
         userService.deleteUser(id);
     }
 
-    @PatchMapping(value = "/{id}")
-    public void ActivateOrDeactivateUser(@PathVariable int id, @RequestBody boolean activate) {
+    @PatchMapping(value = "/{id}/{activate}")
+    public void ActivateOrDeactivateUser(@PathVariable int id, @PathVariable boolean activate) {
         userService.ActivateOrDeactivateUser(id, activate);
 
     }

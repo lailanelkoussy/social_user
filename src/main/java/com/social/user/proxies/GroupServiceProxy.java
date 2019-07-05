@@ -1,20 +1,18 @@
 package com.social.user.proxies;
 
 import com.social.user.entities.Group;
-import com.social.user.entities.Request;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "GroupService")
+@FeignClient(name = "GroupService", url = "http://localhost:8083")
 @RequestMapping(value = "/groups")
 public interface GroupServiceProxy {
 
     //Groups
 
-//    @GetMapping
+    //    @GetMapping
 //    public List<Group> getAllGroups();
 //
 //    @PostMapping
@@ -28,7 +26,8 @@ public interface GroupServiceProxy {
 //
     @GetMapping(value = "/user/{id}/")
     public List<Group> getUserGroups(@PathVariable int id);
-//
+
+    //
 //    @PatchMapping(value = "/{id}/name")
 //    public ResponseEntity<Object> renameGroup(@PathVariable int id, @RequestBody String newName);
 //
@@ -60,7 +59,6 @@ public interface GroupServiceProxy {
 //
 //    //User
     @PatchMapping(value = "/user/{id}/{activate}")
-    public void activateOrDeactivateGroupsOfUser(@PathVariable int userId, @PathVariable boolean activate) ;
-
+    public void activateOrDeactivateGroupsOfUser(@PathVariable int userId, @PathVariable boolean activate);
 
 }
