@@ -5,7 +5,7 @@ import lombok.Data;
 
 
 @Data
-public class Group {
+public class Group { //todo what is this?
 
     int id;
 

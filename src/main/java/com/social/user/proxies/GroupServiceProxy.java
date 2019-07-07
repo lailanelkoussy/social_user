@@ -8,7 +8,7 @@ import java.util.List;
 
 @FeignClient(name = "GroupService", url = "http://localhost:8083")
 @RequestMapping(value = "/groups")
-public interface GroupServiceProxy {
+public interface GroupServiceProxy { //todo I think we should rename the endpoints
 
     //Groups
 

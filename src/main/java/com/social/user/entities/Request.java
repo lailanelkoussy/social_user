@@ -8,7 +8,7 @@ import javax.persistence.*;
 
 @Data
 @NoArgsConstructor
-public class Request {
+public class Request {//todo what is this?
 
     int requestId;
 

@@ -67,7 +67,7 @@ public class UserService {
 
     }
 
-    public boolean updateUser(UserDTO userDTO) {
+    public boolean updateUser(UserDTO userDTO) {//todo separate that mapper to another service
         Optional<User> userOptional = userRepository.findByUsername(userDTO.getUsername());
         if (userOptional.isPresent()) {
             log.info("User " + userDTO.getUsername() + "found in database");
@@ -116,7 +116,7 @@ public class UserService {
         }
     }
 
-    public void followOrUnfollowUser(int userId, int userToFollowId, boolean follow) {
+    public void followOrUnfollowUser(int userId, int userToFollowId, boolean follow) { //todo what if one of the ids is invalid?
         User user = userRepository.getOne(userId);
         User userToFollow = userRepository.getOne(userToFollowId);
 
@@ -133,7 +133,7 @@ public class UserService {
         log.warn("A user cannot follow themselves");
     }
 
-    public List<UserDTO> searchForUser(String query) {
+    public List<UserDTO> searchForUser(String query) { //todo you can concatenate them, then search
         String[] keywords = query.split(" ");
 
         List<User> users = userRepository.findAllByFirstName(keywords[0]);
