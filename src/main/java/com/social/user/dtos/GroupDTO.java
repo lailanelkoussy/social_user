@@ -1,9 +1,9 @@
-package com.social.user.entities;
+package com.social.user.dtos;
 
 import lombok.Data;
 
 @Data
-public class Group {
+public class GroupDTO {
 
     int id;
 

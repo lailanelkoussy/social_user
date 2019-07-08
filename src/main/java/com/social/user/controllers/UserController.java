@@ -2,7 +2,7 @@ package com.social.user.controllers;
 
 import com.social.user.UserDTO;
 import com.social.user.UserService;
-import com.social.user.entities.Group;
+import com.social.user.dtos.GroupDTO;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,7 +46,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved list"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
-    public List<Group> getUserGroups(
+    public List<GroupDTO> getUserGroups(
             @ApiParam(value = "Id of user", required = true) @PathVariable int id) {
         return userService.getUsersGroup(id);
     }

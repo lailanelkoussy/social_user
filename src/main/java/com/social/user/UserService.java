@@ -1,15 +1,13 @@
 package com.social.user;
 
-import com.social.user.entities.Group;
+import com.social.user.dtos.GroupDTO;
 import com.social.user.entities.User;
 import com.social.user.proxies.GroupServiceProxy;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.MethodParameter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
@@ -89,7 +87,7 @@ public class UserService {
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            groupServiceProxy.activateOrDeactivateGroupsOfUser(user.getUserId(), activate);
+            groupServiceProxy.activateOrDeactivateGroupsOfUser(user.getUserId(), activate, "PATCH");
             user.setActive(activate);
             userRepository.save(user);
 
@@ -99,7 +97,7 @@ public class UserService {
 
     }
 
-    public List<Group> getUsersGroup(int id) {
+    public List<GroupDTO> getUsersGroup(int id) {
         Optional<User> userOptional = userRepository.findById(id);
 
         if (userOptional.isPresent()) {
@@ -183,4 +181,6 @@ public class UserService {
         return userDTOS;
 
     }
+
+
 }
