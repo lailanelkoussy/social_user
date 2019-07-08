@@ -6,6 +6,7 @@ import com.social.user.entities.User;
 import lombok.Data;
 
 import javax.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
 
@@ -25,16 +26,20 @@ public class UserDTO {
     private String password;
 
 
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "No numbers, special characters or spaces" )
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "No numbers, special characters or spaces")
     private String firstName;
 
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "No numbers, special characters or spaces" )
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "No numbers, special characters or spaces")
     private String middleName;
 
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "No numbers, special characters or spaces" )
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "No numbers, special characters or spaces")
     private String lastName;
 
-    private Calendar birthday;
+    private LocalDateTime birthday;
+
+    private List<Integer> followingIds;
+
+    private int activate = -1;
 
     @JsonProperty
     public void setPassword(String password) {
@@ -45,5 +50,26 @@ public class UserDTO {
     public String getPassword() {
         return password;
     }
+
+    @JsonProperty
+    public void setFollowingIds(List<Integer> followingIds) {
+        this.followingIds = followingIds;
+    }
+
+    @JsonIgnore
+    public List<Integer> getFollowingIds() {
+        return followingIds;
+    }
+
+    @JsonProperty
+    public void setActivate(int activate) {
+        this.activate = activate;
+    }
+
+    @JsonIgnore
+    public int getActivate() {
+        return activate;
+    }
+
 
 }

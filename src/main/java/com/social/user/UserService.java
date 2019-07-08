@@ -41,7 +41,7 @@ public class UserService {
             return userDTO;
         } else {
             log.error("User id#" + id + " not found in database");
-            throw(new EntityNotFoundException("User not found in database"));
+            throw (new EntityNotFoundException("User not found in database"));
         }
     }
 
@@ -73,7 +73,7 @@ public class UserService {
 
         } else {
             log.error("User " + userDTO.getUsername() + " not found in database");
-            throw(new EntityNotFoundException("User " + userDTO.getUsername() + " not found in database"));
+            throw (new EntityNotFoundException("User " + userDTO.getUsername() + " not found in database"));
         }
     }
 
@@ -82,7 +82,16 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public void ActivateOrDeactivateUser(int id, boolean activate) {
+    public void patchService(int userId, UserDTO userDTO) {
+        if (userDTO.getActivate() != -1) {
+            activateOrDeactivateUser(userId, userDTO.getActivate() != 0);
+        }
+        if (userDTO.getFollowingIds() != null) {
+            followOrUnfollowUsers(userId, userDTO.getFollowingIds(), true);
+        }
+    }
+
+    public void activateOrDeactivateUser(int id, boolean activate) {
         Optional<User> userOptional = userRepository.findById(id);
 
         if (userOptional.isPresent()) {
@@ -106,30 +115,44 @@ public class UserService {
 
         } else {
             log.error("User not found");
-            throw(new EntityNotFoundException("User not found"));
+            throw (new EntityNotFoundException("User not found"));
         }
     }
 
-    public void followOrUnfollowUser(int userId, int userToFollowId, boolean follow) {
+    public void followOrUnfollowUsers(int userId, List<Integer> userToFollowIds, boolean follow) {
 
         Optional<User> userOptional = userRepository.findById(userId);
-        Optional<User> userToFollowOptional = userRepository.findById(userToFollowId);
 
-        if (userOptional.isPresent() && userToFollowOptional.isPresent()) {
-            User user = userOptional.get(), userToFollow = userToFollowOptional.get();
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
             List<User> following = user.getFollowing();
-            if (user.getUserId() != userToFollowId) {
-                if (follow) {
-                    following.add(userToFollow);
+
+            for (int userToFollowId : userToFollowIds) {
+                if (user.getUserId() != userToFollowId) {
+                    Optional<User> userToFollowOptional = userRepository.findById(userToFollowId);
+                    if (userToFollowOptional.isPresent()) {
+                        User userToFollow = userToFollowOptional.get();
+
+                        if (follow) {
+                            following.add(userToFollow);
+                        } else {
+                            following.remove(userToFollow);
+                        }
+
+                        user.setFollowing(following);
+                        userRepository.save(user);
+
+                    } else {
+                        throw (new EntityNotFoundException("Could not find user"));
+                    }
                 } else {
-                    following.remove(userToFollow);
+                    log.warn("A user cannot follow themselves");
                 }
-                user.setFollowing(following);
-                userRepository.save(user);
             }
-            log.warn("A user cannot follow themselves");
+
         } else {
-            log.error("At least one of the users has not been found");
+            log.error("Could not find user");
+            throw (new EntityNotFoundException("Could not find user"));
         }
     }
 
