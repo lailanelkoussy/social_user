@@ -1,4 +1,4 @@
-package com.social.user.entities;
+package com.social.user.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.social.user.dtos.GroupDTO;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class Request {//todo what is this?
+public class RequestDTO {
 
     int requestId;
 
