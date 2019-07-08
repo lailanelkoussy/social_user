@@ -3,7 +3,7 @@ package com.social.user.entities;
 import lombok.Data;
 
 @Data
-public class Group { //todo what is this?
+public class Group {
 
     int id;
 
@@ -13,5 +13,5 @@ public class Group { //todo what is this?
 
     int creatorId;
 
-
 }
+

@@ -70,25 +70,24 @@ public class UserController {
             @ApiParam(value = "Id of user", required = true) @PathVariable int id){
         return userService.getUserFollowing(id);
     }
-
     @PostMapping
     @ApiOperation(value = "Create new user")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully added object"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
+            @ApiResponse(code = 201, message = "Successfully added object"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found"), })
     public ResponseEntity<Object> createNewUser(
             @ApiParam(value = "User object to create", required = true ) @RequestBody @Valid UserDTO userDTO) {
-        return new ResponseEntity<>(userService.addUser(userDTO) ? HttpStatus.OK : HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(userService.addUser(userDTO) ? HttpStatus.CREATED : HttpStatus.NOT_ACCEPTABLE);
     }
 
     @PutMapping
     @ApiOperation(value = "Update user's data")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully updated object"),
+            @ApiResponse(code = 202, message = "Successfully updated object"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
     public ResponseEntity<Object> updateUser(
             @ApiParam(value = "Updated User object", required = true) @RequestBody @Valid UserDTO userDTO) {
-        return new ResponseEntity<>(userService.updateUser(userDTO) ? HttpStatus.OK : HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(userService.updateUser(userDTO) ? HttpStatus.ACCEPTED : HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping(value = "/{id}")

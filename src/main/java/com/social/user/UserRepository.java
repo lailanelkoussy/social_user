@@ -12,11 +12,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByUsername(String username);
 
-    void deleteByUsername(String username);
-
     List<User> findAllByFirstName(String firstName);
 
-    List<User> findAllByMiddleName(String middleName);
+    List<User> findAllByFirstNameAndLastName(String firstName, String lastName);
 
-    List<User> findAllByLastName(String lastName);
+    List<User> findAllByFirstNameAndMiddleNameAndLastName(String firstName, String middleName, String lastName);
+
 }

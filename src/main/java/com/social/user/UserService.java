@@ -6,9 +6,12 @@ import com.social.user.proxies.GroupServiceProxy;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.MethodParameter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.*;
 
 @Service
@@ -23,16 +26,11 @@ public class UserService {
     @Autowired
     private GroupServiceProxy groupServiceProxy;
 
+    ModelMapper modelMapper = new ModelMapper();
+
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
-        List<UserDTO> userDTOS = new ArrayList<>();
-        ModelMapper modelMapper = new ModelMapper();
-        for (User user : users) {
-            UserDTO userDTO = new UserDTO();
-            modelMapper.map(user, userDTO);
-            userDTOS.add(userDTO);
-        }
-        return userDTOS;
+        return toUserDTO(users);
     }
 
     public UserDTO getUser(int id) {
@@ -40,20 +38,19 @@ public class UserService {
         log.info("Retrieving user id#" + id + " from database");
         if (userOptional.isPresent()) {
             log.info("User id#" + id + "found in database");
-            ModelMapper modelMapper = new ModelMapper();
             UserDTO userDTO = new UserDTO();
             modelMapper.map(userOptional.get(), userDTO);
             return userDTO;
         } else {
             log.error("User id#" + id + " not found in database");
-            return null;
+            throw(new EntityNotFoundException("User not found in database"));
         }
     }
 
     public boolean addUser(UserDTO userDTO) {
+
         //checking for username and email
         User user = new User();
-        ModelMapper modelMapper = new ModelMapper();
         modelMapper.map(userDTO, user);
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         if (userRepository.countByEmailOrUsername(user.getEmail(), user.getUsername()) != 0) {
@@ -67,11 +64,10 @@ public class UserService {
 
     }
 
-    public boolean updateUser(UserDTO userDTO) {//todo separate that mapper to another service
+    public boolean updateUser(UserDTO userDTO) {
         Optional<User> userOptional = userRepository.findByUsername(userDTO.getUsername());
         if (userOptional.isPresent()) {
             log.info("User " + userDTO.getUsername() + "found in database");
-            ModelMapper modelMapper = new ModelMapper();
             User user = userOptional.get();
             modelMapper.map(userDTO, user);
             userRepository.save(user);
@@ -79,7 +75,7 @@ public class UserService {
 
         } else {
             log.error("User " + userDTO.getUsername() + " not found in database");
-            return false;
+            throw(new EntityNotFoundException("User " + userDTO.getUsername() + " not found in database"));
         }
     }
 
@@ -112,48 +108,51 @@ public class UserService {
 
         } else {
             log.error("User not found");
-            return null;
+            throw(new EntityNotFoundException("User not found"));
         }
     }
 
-    public void followOrUnfollowUser(int userId, int userToFollowId, boolean follow) { //todo what if one of the ids is invalid?
-        User user = userRepository.getOne(userId);
-        User userToFollow = userRepository.getOne(userToFollowId);
+    public void followOrUnfollowUser(int userId, int userToFollowId, boolean follow) {
 
-        List<User> following = user.getFollowing();
-        if (user.getUserId() != userToFollowId) {
-            if (follow) {
-                following.add(userToFollow);
-            } else {
-                following.remove(userToFollow);
+        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<User> userToFollowOptional = userRepository.findById(userToFollowId);
+
+        if (userOptional.isPresent() && userToFollowOptional.isPresent()) {
+            User user = userOptional.get(), userToFollow = userToFollowOptional.get();
+            List<User> following = user.getFollowing();
+            if (user.getUserId() != userToFollowId) {
+                if (follow) {
+                    following.add(userToFollow);
+                } else {
+                    following.remove(userToFollow);
+                }
+                user.setFollowing(following);
+                userRepository.save(user);
             }
-            user.setFollowing(following);
-            userRepository.save(user);
+            log.warn("A user cannot follow themselves");
+        } else {
+            log.error("At least one of the users has not been found");
         }
-        log.warn("A user cannot follow themselves");
     }
 
-    public List<UserDTO> searchForUser(String query) { //todo you can concatenate them, then search
+    public List<UserDTO> searchForUser(String query) {
         String[] keywords = query.split(" ");
 
-        List<User> users = userRepository.findAllByFirstName(keywords[0]);
+        List<User> users;
 
-        if (keywords.length == 2) {
-            users.retainAll(userRepository.findAllByLastName(keywords[1]));
-        } else if (keywords.length >= 3) {
-            users.retainAll(userRepository.findAllByMiddleName(keywords[1]));
-            users.retainAll(userRepository.findAllByLastName(keywords[2]));
+        switch (keywords.length) {
+            case 1:
+                users = userRepository.findAllByFirstName(keywords[0]);
+                break;
+            case 2:
+                users = userRepository.findAllByFirstNameAndLastName(keywords[0], keywords[1]);
+                break;
+            default:
+                users = userRepository.findAllByFirstNameAndMiddleNameAndLastName(keywords[0], keywords[1], keywords[2]);
+                break;
         }
 
-        ModelMapper modelMapper = new ModelMapper();
-        List<UserDTO> userDTOS = new ArrayList<>();
-
-        for (User user : users) {
-            UserDTO userDTO = new UserDTO();
-            modelMapper.map(user, userDTO);
-            userDTOS.add(userDTO);
-        }
-        return userDTOS;
+        return toUserDTO(users);
     }
 
     public List<UserDTO> getUserFollowing(int userId) {
@@ -170,5 +169,18 @@ public class UserService {
         }
 
         return followingDTOs;
+    }
+
+    List<UserDTO> toUserDTO(List<User> users) {
+
+        List<UserDTO> userDTOS = new ArrayList<>();
+
+        for (User user : users) {
+            UserDTO userDTO = new UserDTO();
+            modelMapper.map(user, userDTO);
+            userDTOS.add(userDTO);
+        }
+        return userDTOS;
+
     }
 }
