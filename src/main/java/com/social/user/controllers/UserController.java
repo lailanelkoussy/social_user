@@ -22,7 +22,7 @@ public class UserController {
     private UserService userService;
 
     //Users
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE) //todo it will always be better to check for the default values before doing this, as json is already the default
     @ApiOperation(value = "Get all users", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved list"),
@@ -47,7 +47,7 @@ public class UserController {
             @ApiResponse(code = 200, message = "Successfully retrieved list"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
     public List<GroupDTO> getUserGroups(
-            @ApiParam(value = "Id of user", required = true) @PathVariable int id) {
+            @ApiParam(value = "Id of user", required = true) @PathVariable int id) { //todo this api shouldn't be in this service!
         return userService.getUsersGroup(id);
     }
 
@@ -115,7 +115,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully updated object"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
-    public void patchMapping(
+    public void patchMapping(//todo this name is not descriptive
             @ApiParam(value = "Id of user", required = true) @PathVariable int id,
             @ApiParam(value = "User object with relevant fields edited", required = true) @RequestBody UserDTO user) {
         userService.patchService(id, user);

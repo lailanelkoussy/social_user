@@ -22,7 +22,7 @@ public class User {
 
     private String email;
 
-    private String username;
+    private String username; //todo please be consistent, the constraints on the table should be also available here
 
     @Column(nullable = false)
     private String password;

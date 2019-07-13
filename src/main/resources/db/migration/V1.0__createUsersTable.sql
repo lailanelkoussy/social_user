@@ -14,3 +14,7 @@ CREATE TABLE user
     UNIQUE (username),
     UNIQUE (email)
 );
+
+
+--todo those primary key, unique constraints should be named
+-- TODO IMPORTANT: REMOVE THIS LINE AND THE PREVIOUS ONE, or flyway will cry :(

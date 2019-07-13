@@ -1,12 +1,12 @@
 
 server:
-  port: 8081
+  port: 8084
 
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/social_user
     username: root
-    password: mydatabase
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
   application:
     name: UserService

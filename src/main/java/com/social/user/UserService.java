@@ -14,7 +14,7 @@ import java.util.*;
 
 @Service
 @Slf4j
-public class UserService {
+public class UserService { //todo where is the service package?
     @Autowired
     UserRepository userRepository;
 
@@ -156,7 +156,7 @@ public class UserService {
         }
     }
 
-    public List<UserDTO> searchForUser(String query) {
+    public List<UserDTO> searchForUser(String query) {//todo what if the user enters "andrew     albert' ?
         String[] keywords = query.split(" ");
 
         List<User> users;
@@ -176,7 +176,7 @@ public class UserService {
         return toUserDTO(users);
     }
 
-    public List<UserDTO> getUserFollowing(int userId) {
+    public List<UserDTO> getUserFollowing(int userId) { //todo in case the size is big, this will not be practical, better to make it as pages
         User user = userRepository.getOne(userId);
         List<User> following = user.getFollowing();
         List<UserDTO> followingDTOs = new ArrayList<>();
@@ -192,7 +192,7 @@ public class UserService {
         return followingDTOs;
     }
 
-    List<UserDTO> toUserDTO(List<User> users) {
+    List<UserDTO> toUserDTO(List<User> users) { // todo why don't you care about the diff between public and private methods ?
 
         List<UserDTO> userDTOS = new ArrayList<>();
 

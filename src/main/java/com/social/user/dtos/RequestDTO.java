@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class RequestDTO {
+public class RequestDTO { //todo this is a useless class
 
     int requestId;
 
