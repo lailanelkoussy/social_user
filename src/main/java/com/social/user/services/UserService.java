@@ -1,6 +1,5 @@
 package com.social.user.services;
 
-import com.social.user.dtos.GroupDTO;
 import com.social.user.dtos.UserDTO;
 import com.social.user.entities.User;
 import com.social.user.proxies.GroupServiceProxy;
@@ -26,7 +25,7 @@ public class UserService {
     @Autowired
     private GroupServiceProxy groupServiceProxy;
 
-    ModelMapper modelMapper = new ModelMapper();
+    private ModelMapper modelMapper = new ModelMapper();
 
     public List<UserDTO> getAllUsers() {
         log.info("Retrieving all users");
@@ -111,20 +110,6 @@ public class UserService {
 
     }
 
-    public List<GroupDTO> getUsersGroup(int id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        log.info("Retrieving user");
-
-        if (userOptional.isPresent()) {
-            log.info("User retrieved");
-            User user = userOptional.get();
-            return groupServiceProxy.getUserGroups(user.getUserId());
-
-        } else {
-            log.error("User not found");
-            throw (new EntityNotFoundException("User not found"));
-        }
-    }
 
     public void followOrUnfollowUsers(int userId, List<Integer> userToFollowIds, boolean follow) {
 

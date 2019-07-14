@@ -2,7 +2,6 @@ package com.social.user.controllers;
 
 import com.social.user.dtos.UserDTO;
 import com.social.user.services.UserService;
-import com.social.user.dtos.GroupDTO;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,15 +40,6 @@ public class UserController {
         return userService.getUser(id);
     }
 
-    @GetMapping(value = "/{id}/groups", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Get groups of a specific user", response = List.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved list"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
-    public List<GroupDTO> getUserGroups(
-            @ApiParam(value = "Id of user", required = true) @PathVariable int id) { //todo this api shouldn't be in this service!
-        return userService.getUsersGroup(id);
-    }
 
     @GetMapping(value = "/search/{query}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Search for user using query", response = List.class)
