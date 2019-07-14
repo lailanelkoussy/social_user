@@ -27,6 +27,7 @@ public class UserService {
     ModelMapper modelMapper = new ModelMapper();
 
     public List<UserDTO> getAllUsers() {
+        log.info("Retrieving all users");
         List<User> users = userRepository.findAll();
         return toUserDTO(users);
     }
@@ -94,7 +95,9 @@ public class UserService {
     public void activateOrDeactivateUser(int id, boolean activate) {
         Optional<User> userOptional = userRepository.findById(id);
 
+        log.info("Retrieving user");
         if (userOptional.isPresent()) {
+            log.info("User retrieved");
             User user = userOptional.get();
             groupServiceProxy.activateOrDeactivateGroupsOfUser(user.getUserId(), activate, "PATCH");
             user.setActive(activate);
@@ -108,8 +111,10 @@ public class UserService {
 
     public List<GroupDTO> getUsersGroup(int id) {
         Optional<User> userOptional = userRepository.findById(id);
+        log.info("Retrieving user");
 
         if (userOptional.isPresent()) {
+            log.info("User retrieved");
             User user = userOptional.get();
             return groupServiceProxy.getUserGroups(user.getUserId());
 
@@ -122,11 +127,13 @@ public class UserService {
     public void followOrUnfollowUsers(int userId, List<Integer> userToFollowIds, boolean follow) {
 
         Optional<User> userOptional = userRepository.findById(userId);
+        log.info("Retrieving user");
 
         if (userOptional.isPresent()) {
+            log.info("User retrieved");
             User user = userOptional.get();
             List<User> following = user.getFollowing();
-
+            log.info("Making changes to user's following list");
             for (int userToFollowId : userToFollowIds) {
                 if (user.getUserId() != userToFollowId) {
                     Optional<User> userToFollowOptional = userRepository.findById(userToFollowId);
@@ -149,7 +156,6 @@ public class UserService {
                     log.warn("A user cannot follow themselves");
                 }
             }
-
         } else {
             log.error("Could not find user");
             throw (new EntityNotFoundException("Could not find user"));
@@ -158,8 +164,8 @@ public class UserService {
 
     public List<UserDTO> searchForUser(String query) {
         String[] keywords = query.split(" ");
-
         List<User> users;
+        log.info("Searching for users");
 
         switch (keywords.length) {
             case 1:
@@ -177,19 +183,19 @@ public class UserService {
     }
 
     public List<UserDTO> getUserFollowing(int userId) {
-        User user = userRepository.getOne(userId);
-        List<User> following = user.getFollowing();
-        List<UserDTO> followingDTOs = new ArrayList<>();
+        Optional<User> optionalUser = userRepository.findById(userId);
+        log.info("Retrieving user...");
 
-        ModelMapper modelMapper = new ModelMapper();
+        if (optionalUser.isPresent()) {
+            log.info("User retrieved...");
+            User user = userRepository.getOne(userId);
+            List<User> following = user.getFollowing();
+            return toUserDTO(following);
 
-        for (User userFollowing : following) {
-            UserDTO userDTO = new UserDTO();
-            modelMapper.map(userFollowing, userDTO);
-            followingDTOs.add(userDTO);
+        } else {
+            log.error("Could not find user");
+            throw (new EntityNotFoundException("Could not find user"));
         }
-
-        return followingDTOs;
     }
 
     List<UserDTO> toUserDTO(List<User> users) {

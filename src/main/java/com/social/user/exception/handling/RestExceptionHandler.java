@@ -1,4 +1,4 @@
-package com.social.user.exceptionhandling;
+package com.social.user.exception.handling;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;

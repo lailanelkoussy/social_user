@@ -1,4 +1,4 @@
-package com.social.user.exceptionhandling;
+package com.social.user.exception.handling;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
