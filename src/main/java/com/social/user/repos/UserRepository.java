@@ -1,4 +1,4 @@
-package com.social.user;
+package com.social.user.repos;
 
 import com.social.user.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Integer> { //todo where is the repos package??
+public interface UserRepository extends JpaRepository<User, Integer> {
 
     long countByEmailOrUsername(String email, String username);
 

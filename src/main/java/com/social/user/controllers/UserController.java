@@ -1,7 +1,7 @@
 package com.social.user.controllers;
 
-import com.social.user.UserDTO;
-import com.social.user.UserService;
+import com.social.user.dtos.UserDTO;
+import com.social.user.services.UserService;
 import com.social.user.dtos.GroupDTO;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class UserController {
     private UserService userService;
 
     //Users
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE) //todo it will always be better to check for the default values before doing this, as json is already the default
+    @GetMapping
     @ApiOperation(value = "Get all users", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved list"),

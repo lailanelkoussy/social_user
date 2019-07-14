@@ -1,4 +1,4 @@
-package com.social.user;
+package com.social.user.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,7 +11,7 @@ import java.util.Calendar;
 import java.util.List;
 
 @Data
-public class UserDTO { //todo why is this class not within the DTOs ?
+public class UserDTO {
 
     @Pattern(regexp = "(?:[a-z0-9!#$%&'*+=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c" +
             "\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0" +

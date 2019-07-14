@@ -1,8 +1,10 @@
-package com.social.user;
+package com.social.user.services;
 
 import com.social.user.dtos.GroupDTO;
+import com.social.user.dtos.UserDTO;
 import com.social.user.entities.User;
 import com.social.user.proxies.GroupServiceProxy;
+import com.social.user.repos.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
