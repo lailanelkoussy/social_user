@@ -2,6 +2,7 @@ package com.social.user.configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -18,7 +19,7 @@ public class SwaggerConfigs {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.social.user.controllers"))
                 .paths(PathSelectors.any())
-                .build()//todo add api info
+                .build().apiInfo(new ApiInfoBuilder().contact("").build())//todo add api info
                 .useDefaultResponseMessages(false);
     }
 

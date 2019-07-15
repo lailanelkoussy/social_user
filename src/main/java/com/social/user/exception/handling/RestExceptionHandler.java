@@ -17,7 +17,7 @@ import javax.persistence.EntityNotFoundException;
 @Slf4j
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(javax.validation.ConstraintViolationException.class)
+    @ExceptionHandler(javax.validation.ConstraintViolationException.class)//todo how come ??? this is something related to the logic, how can we return such thing to the user?
     protected ResponseEntity<Object> handleConstraintViolation(
             javax.validation.ConstraintViolationException ex) {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
