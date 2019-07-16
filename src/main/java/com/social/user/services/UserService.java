@@ -124,7 +124,6 @@ public class UserService {
             groupServiceProxy.activateOrDeactivateGroupsOfUser(user.getUserId(), activate, "PATCH");
             user.setActive(activate);
             userRepository.save(user);
-
         } else {
             log.error("User not found");
         }
