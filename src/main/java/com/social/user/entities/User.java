@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
 
@@ -17,28 +19,30 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "id")
     private int userId;
 
+    @Column(nullable = false, unique = true)
     private String email;
 
-    private String username; //todo please be consistent, the constraints on the table should be also available here
+    @Column(nullable = false, unique = true)
+    private String username;
 
     @Column(nullable = false)
     private String password;
 
     private boolean active;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
     @Column(name = "middle_name")
     private String middleName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    private Calendar birthday;
+    private LocalDateTime birthday;
 
     @ManyToMany
     @JoinTable(

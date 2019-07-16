@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/groups")
 public interface GroupServiceProxy {
 
-    @PatchMapping(value = "/user/{userId}/{activate}")
+    @PatchMapping(value = "/all/user/{userId}/activate/{activate}")
     void activateOrDeactivateGroupsOfUser(
             @PathVariable int userId,
             @PathVariable boolean activate,
-            @RequestHeader(value = "X-HTTP-Method-Override", defaultValue = "PATCH") String xHttpMethodOveride);
+            @RequestHeader(value = "X-HTTP-Method-Override", defaultValue = "PATCH") String xHttpMethodOverride);
 
 }

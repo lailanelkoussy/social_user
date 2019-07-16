@@ -11,11 +11,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import javax.swing.text.html.Option;
+import java.io.InvalidClassException;
 import java.util.*;
 
 @Service
 @Slf4j
 public class UserService {
+
     @Autowired
     UserRepository userRepository;
 
@@ -61,15 +64,18 @@ public class UserService {
             log.info("User added");
             return true;
         }
-
     }
 
-    public boolean updateUser(UserDTO userDTO) {
-        Optional<User> userOptional = userRepository.findByUsername(userDTO.getUsername());
+    public boolean updateUser(int id, UserDTO userDTO) throws InvalidClassException {
+        Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             log.info("User " + userDTO.getUsername() + "found in database");
             User user = userOptional.get();
-            modelMapper.map(userDTO, user);
+
+            user.setFirstName(userDTO.getFirstName());
+            user.setMiddleName(userDTO.getMiddleName());
+            user.setLastName(userDTO.getLastName());
+            user.setBirthday(userDTO.getBirthday());
             userRepository.save(user);
             return true;
 
@@ -79,9 +85,24 @@ public class UserService {
         }
     }
 
+    public List<User> getUserFollowers(int id) {
+        return userRepository.findAllByFollowing_UserId(id);
+    }
+
     public void deleteUser(int id) {
         log.info("Deleting user id#" + id);
-        userRepository.deleteById(id);
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            List<User> followers = userRepository.findAllByFollowing_UserId(id);
+            for(User follower: followers){
+                List<User> following = follower.getFollowing();
+                following.remove(user);
+                follower.setFollowing(following);
+            }
+            userRepository.saveAll(followers);
+            userRepository.deleteById(id);
+        }
     }
 
     public void patchService(int userId, UserDTO userDTO) {
@@ -107,9 +128,7 @@ public class UserService {
         } else {
             log.error("User not found");
         }
-
     }
-
 
     public void followOrUnfollowUsers(int userId, List<Integer> userToFollowIds, boolean follow) {
 
@@ -127,14 +146,10 @@ public class UserService {
                     if (userToFollowOptional.isPresent()) {
                         User userToFollow = userToFollowOptional.get();
 
-                        if (follow) {
+                        if (follow)
                             following.add(userToFollow);
-                        } else {
+                        else
                             following.remove(userToFollow);
-                        }
-
-                        user.setFollowing(following);
-                        userRepository.save(user);
 
                     } else {
                         throw (new EntityNotFoundException("Could not find user"));
@@ -143,6 +158,8 @@ public class UserService {
                     log.warn("A user cannot follow themselves");
                 }
             }
+            user.setFollowing(following);
+            userRepository.save(user);
         } else {
             log.error("Could not find user");
             throw (new EntityNotFoundException("Could not find user"));

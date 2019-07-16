@@ -6,6 +6,7 @@ import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -19,8 +20,15 @@ public class SwaggerConfigs {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.social.user.controllers"))
                 .paths(PathSelectors.any())
-                .build().apiInfo(new ApiInfoBuilder().contact("").build())//todo add api info
+                .build()
+                .apiInfo(apiEndPointsInfo())
                 .useDefaultResponseMessages(false);
     }
 
+    private ApiInfo apiEndPointsInfo() {
+        return new ApiInfoBuilder().title("User Service REST API")
+                .description("User Management REST API")
+                .contact(new Contact("Laila Nasser", "", "lailanelkoussy@aucegypt.edu"))
+                .build();
+    }
 }

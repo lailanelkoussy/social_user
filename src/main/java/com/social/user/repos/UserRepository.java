@@ -10,6 +10,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     long countByEmailOrUsername(String email, String username);
 
+    List<User> findAllByFollowing_UserId(int id);
+
     Optional<User> findByUsername(String username);
 
     List<User> findAllByFirstName(String firstName);

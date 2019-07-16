@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.InvalidClassException;
 import java.util.List;
 
 @RestController
@@ -20,42 +21,40 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    //Users
-    @GetMapping
     @ApiOperation(value = "Get all users", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved list"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
+    @GetMapping
     public List<UserDTO> getUsers() {
         return userService.getAllUsers();
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get user by id", response = UserDTO.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved object"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO getUser(
             @ApiParam(value = "Id of user", required = true) @PathVariable int id) {
         return userService.getUser(id);
     }
 
-
-    @GetMapping(value = "/search/{query}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Search for user using query", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved list"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
+    @GetMapping(value = "/search/{query}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> searchForUser(
             @ApiParam(value = "Query to search", required = true) @PathVariable String query) {
         return userService.searchForUser(query);
     }
 
-    @GetMapping(value = "/{id}/following", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get users followed by a specific user", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully retrieved list"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
+    @GetMapping(value = "/{id}/following", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDTO> getUserFollowing(
             @ApiParam(value = "Id of user", required = true) @PathVariable int id) {
         return userService.getUserFollowing(id);
@@ -71,41 +70,43 @@ public class UserController {
         return new ResponseEntity<>(userService.addUser(userDTO) ? HttpStatus.CREATED : HttpStatus.NOT_ACCEPTABLE);
     }
 
-    @PutMapping
     @ApiOperation(value = "Update user's data")
     @ApiResponses(value = {
             @ApiResponse(code = 202, message = "Successfully updated object"),
+            @ApiResponse(code = 406, message = "Invalid user object"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
+    @PutMapping(value = "/{id}")
     public ResponseEntity<Object> updateUser(
-            @ApiParam(value = "Updated User object", required = true) @RequestBody @Valid UserDTO userDTO) {
-        return new ResponseEntity<>(userService.updateUser(userDTO) ? HttpStatus.ACCEPTED : HttpStatus.NOT_FOUND);
+            @ApiParam(value = "Id of user to update" )@PathVariable int id,
+            @ApiParam(value = "Updated User object", required = true)  @RequestBody @Valid UserDTO userDTO) throws InvalidClassException {
+        return new ResponseEntity<>(userService.updateUser(id, userDTO) ? HttpStatus.ACCEPTED : HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping(value = "/{id}")
     @ApiOperation(value = "Delete user")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully deleted object"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
+    @DeleteMapping(value = "/{id}")
     public void deleteUser(
             @ApiParam(value = "Id of user", required = true) @PathVariable int id) {
         userService.deleteUser(id);
     }
 
-    @DeleteMapping(value = "/{id}/following")
     @ApiOperation(value = "Unfollow users")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully unfollowed users"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
+    @DeleteMapping(value = "/{id}/following")
     public void unfollowUsers(@PathVariable int id, @RequestBody List<Integer> usersToUnfollow) {
         userService.followOrUnfollowUsers(id, usersToUnfollow, false);
     }
 
-    @PatchMapping(value = "/{id}")
     @ApiOperation(value = "Follow a user, activate or deactivate user")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully updated object"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
-    public void patchMapping(//todo this name is not descriptive
+    @PatchMapping(value = "/{id}")
+    public void followUserOrActivateDeactivate(
             @ApiParam(value = "Id of user", required = true) @PathVariable int id,
             @ApiParam(value = "User object with relevant fields edited", required = true) @RequestBody UserDTO user) {
         userService.patchService(id, user);

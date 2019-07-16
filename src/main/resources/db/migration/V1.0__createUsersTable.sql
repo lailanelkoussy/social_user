@@ -1,6 +1,6 @@
 CREATE TABLE user
 (
-    user_id     int(11)      NOT NULL AUTO_INCREMENT,
+    id     int(11)      NOT NULL AUTO_INCREMENT,
     email       varchar(255) NOT NULL,
     username    varchar(255) NOT NULL,
     password    varchar(255) NOT NULL,
@@ -10,11 +10,7 @@ CREATE TABLE user
     last_name   varchar(255) NOT NULL,
     birthday    datetime(6) DEFAULT NULL,
 
-    PRIMARY KEY (user_id),
-    UNIQUE (username),
-    UNIQUE (email)
+    CONSTRAINT PK_User PRIMARY KEY (id),
+    CONSTRAINT Username_User UNIQUE (username),
+    CONSTRAINT Email_User UNIQUE (email)
 );
-
-
---todo those primary key, unique constraints should be named
--- TODO IMPORTANT: REMOVE THIS LINE AND THE PREVIOUS ONE, or flyway will cry :(
