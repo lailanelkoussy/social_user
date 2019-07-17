@@ -7,12 +7,15 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
 
 @Data
 public class UserDTO {
+
+    int userId;
 
     @NotNull
     @Pattern(regexp = "(?:[a-z0-9!#$%&'*+=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c" +
@@ -38,7 +41,7 @@ public class UserDTO {
     @Pattern(regexp = "^[a-zA-Z]+$", message = "No numbers, special characters or spaces")
     private String lastName;
 
-    private LocalDateTime birthday;
+    private LocalDate birthday;
 
     private List<Integer> followingIds;
 
@@ -72,6 +75,16 @@ public class UserDTO {
     @JsonIgnore
     public int getActivate() {
         return activate;
+    }
+
+    @JsonProperty
+    public int getUserId(){
+        return userId;
+    }
+
+    @JsonIgnore
+    public void setUserId(int userId){
+        this.userId = userId;
     }
 
 

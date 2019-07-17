@@ -1,5 +1,7 @@
 package com.social.user.controllers;
 
+import com.social.user.dtos.PatchDTO;
+import com.social.user.dtos.UnfollowDTO;
 import com.social.user.dtos.UserDTO;
 import com.social.user.services.UserService;
 import io.swagger.annotations.*;
@@ -60,14 +62,16 @@ public class UserController {
         return userService.getUserFollowing(id);
     }
 
-    @PostMapping
     @ApiOperation(value = "Create new user")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Successfully added object"),
+            @ApiResponse(code = 406, message = "Invalid user object "),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),})
+    @PostMapping
     public ResponseEntity<Object> createNewUser(
-            @ApiParam(value = "User object to create", required = true) @RequestBody @Valid UserDTO userDTO) {
-        return new ResponseEntity<>(userService.addUser(userDTO) ? HttpStatus.CREATED : HttpStatus.NOT_ACCEPTABLE);
+            @ApiParam(value = "User object to create", required = true) @RequestBody @Valid UserDTO userDTO) throws InvalidClassException {
+        userService.addUser(userDTO);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @ApiOperation(value = "Update user's data")
@@ -77,9 +81,10 @@ public class UserController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
     @PutMapping(value = "/{id}")
     public ResponseEntity<Object> updateUser(
-            @ApiParam(value = "Id of user to update" )@PathVariable int id,
-            @ApiParam(value = "Updated User object", required = true)  @RequestBody @Valid UserDTO userDTO) throws InvalidClassException {
-        return new ResponseEntity<>(userService.updateUser(id, userDTO) ? HttpStatus.ACCEPTED : HttpStatus.NOT_FOUND);
+            @ApiParam(value = "Id of user to update", required = true) @PathVariable int id,
+            @ApiParam(value = "Updated User object", required = true) @RequestBody @Valid UserDTO userDTO) throws InvalidClassException {
+        userService.updateUser(id, userDTO);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @ApiOperation(value = "Delete user")
@@ -97,8 +102,8 @@ public class UserController {
             @ApiResponse(code = 200, message = "Successfully unfollowed users"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
     @DeleteMapping(value = "/{id}/following")
-    public void unfollowUsers(@PathVariable int id, @RequestBody List<Integer> usersToUnfollow) {
-        userService.followOrUnfollowUsers(id, usersToUnfollow, false);
+    public void unfollowUsers(@PathVariable int id, @RequestBody UnfollowDTO usersToUnfollow) {
+        userService.followOrUnfollowUsers(id, usersToUnfollow.getUnfollow(), false);
     }
 
     @ApiOperation(value = "Follow a user, activate or deactivate user")
@@ -108,8 +113,8 @@ public class UserController {
     @PatchMapping(value = "/{id}")
     public void followUserOrActivateDeactivate(
             @ApiParam(value = "Id of user", required = true) @PathVariable int id,
-            @ApiParam(value = "User object with relevant fields edited", required = true) @RequestBody UserDTO user) {
-        userService.patchService(id, user);
+            @ApiParam(value = "User object with relevant fields edited", required = true) @RequestBody PatchDTO patchDTO) {
+        userService.patchService(id, patchDTO);
     }
 
 }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
@@ -42,7 +43,7 @@ public class User {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    private LocalDateTime birthday;
+    private LocalDate birthday;
 
     @ManyToMany
     @JoinTable(

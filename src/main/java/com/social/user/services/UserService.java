@@ -1,5 +1,6 @@
 package com.social.user.services;
 
+import com.social.user.dtos.PatchDTO;
 import com.social.user.dtos.UserDTO;
 import com.social.user.entities.User;
 import com.social.user.proxies.GroupServiceProxy;
@@ -40,7 +41,7 @@ public class UserService {
         Optional<User> userOptional = userRepository.findById(id);
         log.info("Retrieving user id#" + id + " from database");
         if (userOptional.isPresent()) {
-            log.info("User id#" + id + "found in database");
+            log.info("User id#" + id + " found in database");
             UserDTO userDTO = new UserDTO();
             modelMapper.map(userOptional.get(), userDTO);
             return userDTO;
@@ -50,7 +51,13 @@ public class UserService {
         }
     }
 
-    public boolean addUser(UserDTO userDTO) {
+    public List<UserDTO> getUsers(List<Integer> userIds) {
+        List<User> users = userRepository.findAllById(userIds);
+
+        return toUserDTO(users);
+    }
+
+    public void addUser(UserDTO userDTO) throws InvalidClassException {
 
         //checking for username and email
         User user = new User();
@@ -58,15 +65,15 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         if (userRepository.countByEmailOrUsername(user.getEmail(), user.getUsername()) != 0) {
             log.error("Username or email is already used");
-            return false;
+            throw (new InvalidClassException("Username or email is already used"));
         } else {
             userRepository.save(user);
             log.info("User added");
-            return true;
+
         }
     }
 
-    public boolean updateUser(int id, UserDTO userDTO) throws InvalidClassException {
+    public void updateUser(int id, UserDTO userDTO) {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             log.info("User " + userDTO.getUsername() + "found in database");
@@ -77,7 +84,6 @@ public class UserService {
             user.setLastName(userDTO.getLastName());
             user.setBirthday(userDTO.getBirthday());
             userRepository.save(user);
-            return true;
 
         } else {
             log.error("User " + userDTO.getUsername() + " not found in database");
@@ -85,8 +91,11 @@ public class UserService {
         }
     }
 
-    public List<User> getUserFollowers(int id) {
-        return userRepository.findAllByFollowing_UserId(id);
+    private List<User> getUserFollowers(int id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent())
+            return userRepository.findAllByFollowing_UserId(id);
+        else throw new EntityNotFoundException("User not found");
     }
 
     public void deleteUser(int id) {
@@ -94,27 +103,29 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            List<User> followers = userRepository.findAllByFollowing_UserId(id);
-            for(User follower: followers){
+            List<User> followers = getUserFollowers(id);
+            for (User follower : followers) {
                 List<User> following = follower.getFollowing();
                 following.remove(user);
                 follower.setFollowing(following);
             }
             userRepository.saveAll(followers);
             userRepository.deleteById(id);
+        } else {
+            throw (new EntityNotFoundException("User not found"));
         }
     }
 
-    public void patchService(int userId, UserDTO userDTO) {
-        if (userDTO.getActivate() != -1) {
-            activateOrDeactivateUser(userId, userDTO.getActivate() != 0);
+    public void patchService(int userId, PatchDTO patchDTO) {
+        if (patchDTO.getActivate() != -1) {
+            activateOrDeactivateUser(userId, patchDTO.getActivate() != 0);
         }
-        if (userDTO.getFollowingIds() != null) {
-            followOrUnfollowUsers(userId, userDTO.getFollowingIds(), true);
+        if (patchDTO.getFollow() != null) {
+            followOrUnfollowUsers(userId, patchDTO.getFollow(), true);
         }
     }
 
-    public void activateOrDeactivateUser(int id, boolean activate) {
+    private void activateOrDeactivateUser(int id, boolean activate) {
         Optional<User> userOptional = userRepository.findById(id);
 
         log.info("Retrieving user");
@@ -126,6 +137,7 @@ public class UserService {
             userRepository.save(user);
         } else {
             log.error("User not found");
+            throw new EntityNotFoundException("User not found");
         }
     }
 
@@ -144,7 +156,6 @@ public class UserService {
                     Optional<User> userToFollowOptional = userRepository.findById(userToFollowId);
                     if (userToFollowOptional.isPresent()) {
                         User userToFollow = userToFollowOptional.get();
-
                         if (follow)
                             following.add(userToFollow);
                         else
@@ -201,7 +212,7 @@ public class UserService {
         }
     }
 
-    List<UserDTO> toUserDTO(List<User> users) {
+    private List<UserDTO> toUserDTO(List<User> users) {
 
         List<UserDTO> userDTOS = new ArrayList<>();
 
@@ -214,5 +225,14 @@ public class UserService {
 
     }
 
+    public List<UserDTO> getUserAndFollowing(int userId){
+        List<UserDTO> users = new ArrayList<>();
+
+        users.add(getUser(userId));
+        users.addAll(getUserFollowing(userId));
+
+        return users;
+
+    }
 
 }

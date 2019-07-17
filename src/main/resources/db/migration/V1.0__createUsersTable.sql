@@ -8,7 +8,7 @@ CREATE TABLE user
     active      bool         DEFAULT TRUE,
     middle_name varchar(255) DEFAULT NULL,
     last_name   varchar(255) NOT NULL,
-    birthday    datetime(6) DEFAULT NULL,
+    birthday    date DEFAULT NULL,
 
     CONSTRAINT PK_User PRIMARY KEY (id),
     CONSTRAINT Username_User UNIQUE (username),
