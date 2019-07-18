@@ -38,6 +38,10 @@ public class UserService {
     public List<UserDTO> getAllUsers() {
         log.info("Retrieving all users");
         List<User> users = userRepository.findAll();
+        for(User user: users){
+            if(!user.isActive())
+                users.remove(user);
+        }
         return toUserDTO(users);
     }
 
@@ -67,6 +71,7 @@ public class UserService {
         User user = new User();
         modelMapper.map(userDTO, user);
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setActive(true);
         if (userRepository.countByEmailOrUsername(user.getEmail(), user.getUsername()) != 0) {
             log.error("Username or email is already used");
             throw (new InvalidClassException("Username or email is already used"));
