@@ -4,7 +4,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 
-@FeignClient(name = "GroupService", url = "http://localhost:8083")
+@FeignClient(name = "GroupService")
 public interface GroupServiceProxy {
 
     @PatchMapping(value = "/groups/all/user/{userId}/activate/{activate}")
