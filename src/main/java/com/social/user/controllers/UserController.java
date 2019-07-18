@@ -67,7 +67,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Successfully added object"),
             @ApiResponse(code = 406, message = "Invalid user object "),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),})
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
     @PostMapping
     public ResponseEntity<Object> createNewUser(
             @ApiParam(value = "User object to create", required = true) @RequestBody @Valid CreateUserDTO userDTO) throws InvalidClassException {

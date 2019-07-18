@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.io.InvalidClassException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -37,12 +38,8 @@ public class UserService {
 
     public List<UserDTO> getAllUsers() {
         log.info("Retrieving all users");
-        List<User> users = userRepository.findAll();
-        for(User user: users){
-            if(!user.isActive())
-                users.remove(user);
-        }
-        return toUserDTO(users);
+
+        return toUserDTO(userRepository.findAllByActive(true));
     }
 
     public UserDTO getUser(int id) {

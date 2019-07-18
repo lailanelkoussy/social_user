@@ -18,4 +18,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     List<User> findAllByFirstNameAndMiddleNameAndLastName(String firstName, String middleName, String lastName);
 
+    List<User> findAllByActive(boolean isActive);
+
 }

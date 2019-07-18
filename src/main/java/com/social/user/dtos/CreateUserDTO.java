@@ -2,28 +2,29 @@ package com.social.user.dtos;
 
 import lombok.Data;
 
-import javax.persistence.Column;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 
 @Data
 public class CreateUserDTO {
 
-    @Column(nullable = false, unique = true)
+    @NotNull
     private String email;
 
-    @Column(nullable = false, unique = true)
+    @NotNull
     private String username;
 
-    @Column(nullable = false)
+    @NotNull
+    @Pattern(regexp = "^(?=.*\\d).{4,8}$", message = " Password must be between 4 and 8 digits long and include at least one numeric digit.")
     private String password;
 
-    @Column(name = "first_name", nullable = false)
+    @NotNull
     private String firstName;
 
-    @Column(name = "middle_name")
     private String middleName;
 
-    @Column(name = "last_name", nullable = false)
+    @NotNull
     private String lastName;
 
     private LocalDate birthday;
