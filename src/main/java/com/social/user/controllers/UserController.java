@@ -1,5 +1,6 @@
 package com.social.user.controllers;
 
+import com.social.user.dtos.CreateUserDTO;
 import com.social.user.dtos.PatchDTO;
 import com.social.user.dtos.UnfollowDTO;
 import com.social.user.dtos.UserDTO;
@@ -69,7 +70,7 @@ public class UserController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found"),})
     @PostMapping
     public ResponseEntity<Object> createNewUser(
-            @ApiParam(value = "User object to create", required = true) @RequestBody @Valid UserDTO userDTO) throws InvalidClassException {
+            @ApiParam(value = "User object to create", required = true) @RequestBody @Valid CreateUserDTO userDTO) throws InvalidClassException {
         userService.addUser(userDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

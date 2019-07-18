@@ -12,8 +12,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     List<User> findAllByFollowing_UserId(int id);
 
-    Optional<User> findByUsername(String username);
-
     List<User> findAllByFirstName(String firstName);
 
     List<User> findAllByFirstNameAndLastName(String firstName, String lastName);

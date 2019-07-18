@@ -1,9 +1,11 @@
 package com.social.user.services;
 
+import com.social.user.dtos.CreateUserDTO;
 import com.social.user.dtos.PatchDTO;
 import com.social.user.dtos.UserDTO;
 import com.social.user.entities.User;
 import com.social.user.proxies.GroupServiceProxy;
+import com.social.user.proxies.PhotoServiceProxy;
 import com.social.user.repos.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -12,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import javax.swing.text.html.Option;
 import java.io.InvalidClassException;
 import java.util.*;
 
@@ -28,6 +29,9 @@ public class UserService {
 
     @Autowired
     private GroupServiceProxy groupServiceProxy;
+
+    @Autowired
+    private PhotoServiceProxy photoServiceProxy;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -57,7 +61,7 @@ public class UserService {
         return toUserDTO(users);
     }
 
-    public void addUser(UserDTO userDTO) throws InvalidClassException {
+    public void addUser(CreateUserDTO userDTO) throws InvalidClassException {
 
         //checking for username and email
         User user = new User();
@@ -109,6 +113,9 @@ public class UserService {
                 following.remove(user);
                 follower.setFollowing(following);
             }
+            photoServiceProxy.deleteUsersPhotos(id);
+            groupServiceProxy.deleteUsersGroupsAndMembers(id);
+            groupServiceProxy.deleteUsersRequests(id);
             userRepository.saveAll(followers);
             userRepository.deleteById(id);
         } else {
@@ -151,19 +158,16 @@ public class UserService {
             User user = userOptional.get();
             List<User> following = user.getFollowing();
             log.info("Making changes to user's following list");
-            for (int userToFollowId : userToFollowIds) {
-                if (user.getUserId() != userToFollowId) {
-                    Optional<User> userToFollowOptional = userRepository.findById(userToFollowId);
-                    if (userToFollowOptional.isPresent()) {
-                        User userToFollow = userToFollowOptional.get();
-                        if (follow)
-                            following.add(userToFollow);
-                        else
-                            following.remove(userToFollow);
-
-                    } else {
-                        throw (new EntityNotFoundException("Could not find user"));
-                    }
+            List<User> usersToFollow = userRepository.findAllById(userToFollowIds);
+            if (usersToFollow.size() < userToFollowIds.size()) {
+                log.warn("Some user Ids were invalid");
+            }
+            for (User userToFollow : usersToFollow) {
+                if (user.getUserId() != userToFollow.getUserId()) {
+                    if (follow)
+                        following.add(userToFollow);
+                    else
+                        following.remove(userToFollow);
                 } else {
                     log.warn("A user cannot follow themselves");
                 }
@@ -222,16 +226,6 @@ public class UserService {
             userDTOS.add(userDTO);
         }
         return userDTOS;
-
-    }
-
-    public List<UserDTO> getUserAndFollowing(int userId){
-        List<UserDTO> users = new ArrayList<>();
-
-        users.add(getUser(userId));
-        users.addAll(getUserFollowing(userId));
-
-        return users;
 
     }
 

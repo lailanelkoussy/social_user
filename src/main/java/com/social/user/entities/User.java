@@ -52,6 +52,4 @@ public class User {
     inverseJoinColumns ={@JoinColumn(name = "following_user_id")} )
     private List<User> following;
 
-
-
 }
