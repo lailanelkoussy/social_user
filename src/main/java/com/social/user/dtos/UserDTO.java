@@ -78,12 +78,12 @@ public class UserDTO {
     }
 
     @JsonProperty
-    public int getUserId(){
+    public int getUserId() {
         return userId;
     }
 
     @JsonIgnore
-    public void setUserId(int userId){
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 

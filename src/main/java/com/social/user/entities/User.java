@@ -45,11 +45,23 @@ public class User {
 
     private LocalDate birthday;
 
+    @Column(name = "account_expired")
+    private Boolean accountExpired = false;
+
+    @Column(name = "account_locked")
+    private Boolean accountLocked = false;
+
+    @Column(name = "credentials_expired")
+    private Boolean credentialsExpired = false;
+
+    @Column
+    private Boolean enabled = true;
+
     @ManyToMany
     @JoinTable(
             name = "user_following",
             joinColumns = {@JoinColumn(name = "user_id")},
-    inverseJoinColumns ={@JoinColumn(name = "following_user_id")} )
+            inverseJoinColumns = {@JoinColumn(name = "following_user_id")})
     private List<User> following;
 
 }

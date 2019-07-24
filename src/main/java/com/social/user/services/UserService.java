@@ -67,7 +67,7 @@ public class UserService {
         //checking for username and email
         User user = new User();
         modelMapper.map(userDTO, user);
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setPassword(userDTO.getPassword());
         user.setActive(true);
         if (userRepository.countByEmailOrUsername(user.getEmail(), user.getUsername()) != 0) {
             log.error("Username or email is already used");
@@ -102,6 +102,14 @@ public class UserService {
         if (optionalUser.isPresent())
             return userRepository.findAllByFollowing_UserId(id);
         else throw new EntityNotFoundException("User not found");
+    }
+
+    public User getUserByUsername(String username){
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        if(!userOptional.isPresent()){
+            throw new EntityNotFoundException("Could not find user");
+        }
+        else return userOptional.get();
     }
 
     public void deleteUser(int id) {

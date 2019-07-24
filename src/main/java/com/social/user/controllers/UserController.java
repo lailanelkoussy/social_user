@@ -4,6 +4,7 @@ import com.social.user.dtos.CreateUserDTO;
 import com.social.user.dtos.PatchDTO;
 import com.social.user.dtos.UnfollowDTO;
 import com.social.user.dtos.UserDTO;
+import com.social.user.entities.User;
 import com.social.user.services.UserService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,4 +119,8 @@ public class UserController {
         userService.patchService(id, patchDTO);
     }
 
+    @GetMapping(value = "/username/{username}")
+    public User getUserByUsername(@PathVariable String username){
+        return userService.getUserByUsername(username);
+    }
 }

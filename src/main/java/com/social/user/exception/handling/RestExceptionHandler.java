@@ -21,7 +21,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(InvalidClassException.class)
     protected ResponseEntity<Object> handleInvalidClassException(
             InvalidClassException ex) {
-        return new ResponseEntity<>(ex.getLocalizedMessage(),HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(ex.getLocalizedMessage(), HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
