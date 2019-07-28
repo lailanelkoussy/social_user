@@ -16,7 +16,7 @@ public class CreateUserDTO {
     private String username;
 
     @NotNull
-    @Pattern(regexp = "^(?=.*\\d).{4,8}$", message = " Password must be between 4 and 8 digits long and include at least one numeric digit.")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[#$^+=!*()@%&]).{8,10}$", message = " Password must be between 8 digits or longer and include at least one numeric digit, one uppercase, one lower case and one special character.")
     private String password;
 
     @NotNull

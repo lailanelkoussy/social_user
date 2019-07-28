@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.io.InvalidClassException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -56,12 +55,6 @@ public class UserService {
         }
     }
 
-    public List<UserDTO> getUsers(List<Integer> userIds) {
-        List<User> users = userRepository.findAllById(userIds);
-
-        return toUserDTO(users);
-    }
-
     public void addUser(CreateUserDTO userDTO) throws InvalidClassException {
 
         //checking for username and email
@@ -97,26 +90,31 @@ public class UserService {
         }
     }
 
-    private List<User> getUserFollowers(int id) {
+    private List<User> getUserFollowers(int id) throws IllegalAccessException {
         Optional<User> optionalUser = userRepository.findById(id);
-        if (optionalUser.isPresent())
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            if (!user.isActive())
+                throw new IllegalAccessException("This user is deactivated");
+
             return userRepository.findAllByFollowing_UserId(id);
-        else throw new EntityNotFoundException("User not found");
+        } else throw new EntityNotFoundException("User not found");
     }
 
-    public User getUserByUsername(String username){
+    public User getUserByUsername(String username) {
         Optional<User> userOptional = userRepository.findByUsername(username);
-        if(!userOptional.isPresent()){
+        if (!userOptional.isPresent()) {
             throw new EntityNotFoundException("Could not find user");
-        }
-        else return userOptional.get();
+        } else return userOptional.get();
     }
 
-    public void deleteUser(int id) {
+    public void deleteUser(int id) throws IllegalAccessException {
         log.info("Deleting user id#" + id);
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
+            if (!user.isActive())
+                throw new IllegalAccessException("This user is deactivated");
             List<User> followers = getUserFollowers(id);
             for (User follower : followers) {
                 List<User> following = follower.getFollowing();
@@ -133,7 +131,7 @@ public class UserService {
         }
     }
 
-    public void patchService(int userId, PatchDTO patchDTO) {
+    public void patchService(int userId, PatchDTO patchDTO) throws IllegalAccessException {
         if (patchDTO.getActivate() != -1) {
             activateOrDeactivateUser(userId, patchDTO.getActivate() != 0);
         }
@@ -158,7 +156,7 @@ public class UserService {
         }
     }
 
-    public void followOrUnfollowUsers(int userId, List<Integer> userToFollowIds, boolean follow) {
+    public void followOrUnfollowUsers(int userId, List<Integer> userToFollowIds, boolean follow) throws IllegalAccessException {
 
         Optional<User> userOptional = userRepository.findById(userId);
         log.info("Retrieving user");
@@ -166,6 +164,8 @@ public class UserService {
         if (userOptional.isPresent()) {
             log.info("User retrieved");
             User user = userOptional.get();
+            if (!user.isActive())
+                throw new IllegalAccessException("This user is deactivated");
             List<User> following = user.getFollowing();
             log.info("Making changes to user's following list");
             List<User> usersToFollow = userRepository.findAllById(userToFollowIds);
@@ -174,6 +174,8 @@ public class UserService {
             }
             for (User userToFollow : usersToFollow) {
                 if (user.getUserId() != userToFollow.getUserId()) {
+                    if(!userToFollow.isActive())
+                        throw new IllegalAccessException("One of the users is deactivated");
                     if (follow)
                         following.add(userToFollow);
                     else
